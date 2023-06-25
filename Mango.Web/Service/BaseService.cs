@@ -38,13 +38,13 @@ public class BaseService : IBaseService
 
             switch (requestDto.ApiType)
             {
-                case ApiType.POST:
+                case Sd.ApiType.POST:
                     message.Method = HttpMethod.Post;
                     break;
-                case ApiType.DELETE:
+                case Sd.ApiType.DELETE:
                     message.Method = HttpMethod.Delete;
                     break;
-                case ApiType.PUT:
+                case Sd.ApiType.PUT:
                     message.Method = HttpMethod.Put;
                     break;
                 default:
