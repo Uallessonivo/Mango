@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
+﻿using Mango.Web.Models;
 using Microsoft.AspNetCore.Mvc;
-using Mango.Web.Models;
+using System.Diagnostics;
 
 namespace Mango.Web.Controllers;
 
