@@ -13,14 +13,17 @@ builder.Services.AddHttpClient();
 Sd.CouponAPIBase = builder.Configuration["ServiceUrls:CouponAPI"]!;
 Sd.AuthAPIBase = builder.Configuration["ServiceUrls:AuthAPI"]!;
 Sd.ProductAPIBase = builder.Configuration["ServiceUrls:ProductAPI"]!;
+Sd.CartAPIBase = builder.Configuration["ServiceUrls:CartAPI"]!;
 
 builder.Services.AddHttpClient<ICouponService, CouponService>();
 builder.Services.AddHttpClient<IAuthService, AuthService>();
 builder.Services.AddHttpClient<IProductService, ProductService>();
+builder.Services.AddHttpClient<ICartService, CartService>();
 
 builder.Services.AddScoped<IBaseService, BaseService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<ICouponService, CouponService>();
 builder.Services.AddScoped<ITokenProvider, TokenProvider>();
 
