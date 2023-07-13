@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Mango.MessageBus;
 using Mango.Services.CartAPI.Data;
 using Mango.Services.CartAPI.Models;
 using Mango.Services.CartAPI.Models.Dtos;
@@ -15,16 +16,21 @@ namespace Mango.Services.CartAPI.Controllers
         private ResponseDto _response;
         private IMapper _mapper;
         private readonly AppDbContext _appDbContext;
+        private readonly IMessageBus _messageBus;
         private IProductService _productService;
+        private IConfiguration _configuration;
         private ICouponService _couponService;
 
-        public CartController(AppDbContext appDbContext, IMapper mapper, IProductService productService, ICouponService couponService)
+        public CartController(AppDbContext appDbContext,
+            IMapper mapper, IProductService productService, ICouponService couponService, IMessageBus messageBus, IConfiguration configuration)
         {
             _appDbContext = appDbContext;
             _mapper = mapper;
             _response = new ResponseDto();
             _productService = productService;
             _couponService = couponService;
+            _messageBus = messageBus;
+            _configuration = configuration;
         }
 
         [HttpGet("GetCart/{userId}")]
@@ -81,6 +87,24 @@ namespace Mango.Services.CartAPI.Controllers
                 _appDbContext.CartHeaders.Update(cartFromDb);
                 await _appDbContext.SaveChangesAsync();
 
+                _response.Result = true;
+
+            }
+            catch (Exception ex)
+            {
+                _response.Message = ex.Message.ToString();
+                _response.IsSuccess = false;
+            }
+
+            return _response;
+        }
+
+        [HttpPost("EmailCartRequest")]
+        public async Task<ResponseDto> EmailCartRequest([FromBody] CartDto cartDto)
+        {
+            try
+            {
+                await _messageBus.PublishMessage(cartDto, _configuration.GetValue<string>("TopicAndQueueNames:EmailCart"));
                 _response.Result = true;
 
             }
