@@ -51,7 +51,7 @@ namespace Mango.Services.CartAPI.Controllers
                 foreach (var item in cart.CartDetails)
                 {
                     item.Product = productDtos.FirstOrDefault(u => u.ProductId == item.ProductId);
-                    cart.CartHeader.CartTotal += (item.Count * item.Product!.Price);
+                    cart.CartHeader.CartTotal += ( item.Count * item.Product!.Price );
                 }
 
                 // apply coupon if any
@@ -104,7 +104,7 @@ namespace Mango.Services.CartAPI.Controllers
         {
             try
             {
-                await _messageBus.PublishMessage(cartDto, _configuration.GetValue<string>("TopicAndQueueNames:EmailCart"));
+                await _messageBus.PublishMessage(cartDto, _configuration.GetValue<string>("TopicAndQueueNames:EmailCartQueue"));
                 _response.Result = true;
 
             }
