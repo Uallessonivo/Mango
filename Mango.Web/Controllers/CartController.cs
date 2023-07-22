@@ -40,14 +40,36 @@ namespace Mango.Web.Controllers
             cart.CartHeader.Name = cartDto.CartHeader.Name;
 
             var response = await _orderService.CreateOrder(cart);
-            OrderHeaderDto orderHeaderDto = JsonConvert.DeserializeObject<OrderHeaderDto>(Convert.ToString(response.Result));
+            OrderHeaderDto orderHeaderDto = JsonConvert
+                .DeserializeObject<OrderHeaderDto>(Convert.ToString(response.Result));
 
             if (response != null && response.IsSuccess)
             {
-                // stripe to place order
+                var domain = Request.Scheme + "://" + Request.Host.Value + "/";
+
+                StripeRequestDto stripeRequestDto = new()
+                {
+                    ApprovedUrl = domain + "cart/Confirmation?orderId=" + orderHeaderDto.OrderHeaderId,
+                    CancelUrl = domain + "cart/checkout",
+                    OrderHeader = orderHeaderDto
+                };
+
+                var stripeResponse = await _orderService.CreateStripeSession(stripeRequestDto);
+                
+                StripeRequestDto stripeResult = JsonConvert
+                    .DeserializeObject<StripeRequestDto>(Convert.ToString(stripeResponse.Result));
+                
+                Response.Headers.Add("Location", stripeResult.StripeSessionUrl);
+
+                return new StatusCodeResult(303);
             }
 
             return View();
+        }
+        
+        public async Task<IActionResult> Confirmation(int orderId)
+        {
+            return View(orderId);
         }
 
         public async Task<IActionResult> Remove(int cartDetailsId)
